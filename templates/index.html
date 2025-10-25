@@ -1,0 +1,100 @@
+{% macro input(label, name, type="text", value="", min=None) -%}
+<div class="row">
+  <label>{{ label }}</label>
+  <input name="{{ name }}" type="{{ type }}" value="{{ value }}"{% if min is not none %} min="{{ min }}"{% endif %} required/>
+</div>
+{%- endmacro %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Cottage Booking</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">Cottage<span>Book</span></div>
+  </header>
+
+  <main class="container">
+    <section class="searchCard">
+      <form id="searchForm">
+        <div class="tabs">
+          <button type="button" class="tab active">Search</button>
+        </div>
+        <div class="grid">
+          {{ input("Booker Name", "booker_name") }}
+          {{ input("Required Places", "required_places", "number", "4", 1) }}
+          {{ input("Bedrooms", "required_bedrooms", "number", "2", 0) }}
+          {{ input("Max Distance to Lake (m)", "max_distance_lake_m", "number", "200", 0) }}
+          {{ input("City", "city", "text", "Jyväskylä") }}
+          {{ input("Max Distance to City (m)", "max_distance_city_m", "number", "60000", 0) }}
+          {{ input("Required Days", "required_days", "number", "3", 1) }}
+          {{ input("Start Date", "start_date", "date") }}
+          {{ input("Max Shift (± days)", "max_shift_days", "number", "2", 0) }}
+        </div>
+        <div class="actions">
+          <button class="btn" type="submit">Search</button>
+          <span id="status"></span>
+        </div>
+      </form>
+    </section>
+
+    <section id="results" class="results"></section>
+  </main>
+
+  <script>
+  document.getElementById("searchForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const status = document.getElementById("status");
+    status.textContent = "Searching...";
+    const payload = Object.fromEntries(new FormData(e.target).entries());
+    payload.required_places = Number(payload.required_places);
+    payload.required_bedrooms = Number(payload.required_bedrooms);
+    payload.max_distance_lake_m = Number(payload.max_distance_lake_m);
+    payload.max_distance_city_m = Number(payload.max_distance_city_m);
+    payload.required_days = Number(payload.required_days);
+    payload.max_shift_days = Number(payload.max_shift_days);
+
+    const results = document.getElementById("results");
+    results.innerHTML = "";
+
+    try {
+      const resp = await fetch("/search", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+      });
+      const data = await resp.json();
+      status.textContent = "";
+      if (!Array.isArray(data) || data.length === 0) {
+        results.innerHTML = '<div class="empty">No matches found. Try widening your filters.</div>';
+        return;
+      }
+      results.innerHTML = data.map(item => `
+        <article class="card">
+          <img src="${item.image_url}" alt="cottage"/>
+          <div class="content">
+            <h3>${item.address}</h3>
+            <div class="meta">
+              <span>Booking <strong>#${item.booking_number}</strong></span>
+              <span>${item.nearest_city} • ${item.distance_to_city_m} m to city</span>
+              <span>${item.distance_to_lake_m} m to lake</span>
+            </div>
+            <div class="facts">
+              <span>${item.capacity} guests</span>
+              <span>${item.bedrooms} bedrooms</span>
+              <span>${item.booking_start} → ${item.booking_end}</span>
+            </div>
+            <div class="booker">Booker: <strong>${item.booker_name}</strong></div>
+          </div>
+        </article>
+      `).join("");
+    } catch (err) {
+      status.textContent = "Error contacting server.";
+    }
+  });
+  </script>
+</body>
+</html>

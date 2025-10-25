@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://example.org/cottage#"
+     xml:base="http://example.org/cottage"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://example.org/cottage#">
+        <rdfs:label>Cottage Booking Ontology</rdfs:label>
+        <rdfs:comment>Ontology for cottages, locations, and availability for a booking demo.</rdfs:comment>
+    </owl:Ontology>
+    <owl:Class rdf:about="http://example.org/cottage#Cottage"/>
+    <owl:Class rdf:about="http://example.org/cottage#City"/>
+    <owl:Class rdf:about="http://example.org/cottage#AvailabilityPeriod"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#capacity"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#bedrooms"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#distanceToLakeMeters"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#distanceToCityMeters"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#address"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#imageURL"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#startDate"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#endDate"/>
+    <owl:DatatypeProperty rdf:about="http://example.org/cottage#cityName"/>
+    <owl:ObjectProperty rdf:about="http://example.org/cottage#nearestCity"/>
+    <owl:ObjectProperty rdf:about="http://example.org/cottage#hasAvailability"/>
+</rdf:RDF>

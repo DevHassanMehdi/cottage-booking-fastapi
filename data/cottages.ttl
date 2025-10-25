@@ -1,0 +1,90 @@
+@prefix ex: <http://example.org/cottage#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+ex:Jyväskylä a ex:City ;
+  ex:cityName "Jyväskylä" .
+
+ex:Helsinki a ex:City ;
+  ex:cityName "Helsinki" .
+
+ex:Tampere a ex:City ;
+  ex:cityName "Tampere" .
+
+ex:Cottage_A a ex:Cottage ;
+  ex:address "123 Lakeview Rd, Korpilahti" ;
+  ex:imageURL "https://images.unsplash.com/photo-1482192505345-5655af888cc4" ;
+  ex:capacity 6 ;
+  ex:bedrooms 3 ;
+  ex:distanceToLakeMeters 80 ;
+  ex:nearestCity ex:Jyväskylä ;
+  ex:distanceToCityMeters 25000 ;
+  ex:hasAvailability ex:Avail_A1, ex:Avail_A2 .
+
+ex:Cottage_B a ex:Cottage ;
+  ex:address "9 Pine Cone Way, Laukaa" ;
+  ex:imageURL "https://images.unsplash.com/photo-1482192505345-5655af888cc4" ;
+  ex:capacity 4 ;
+  ex:bedrooms 2 ;
+  ex:distanceToLakeMeters 30 ;
+  ex:nearestCity ex:Jyväskylä ;
+  ex:distanceToCityMeters 32000 ;
+  ex:hasAvailability ex:Avail_B1 .
+
+ex:Cottage_C a ex:Cottage ;
+  ex:address "77 Birch Lane, Kangasala" ;
+  ex:imageURL "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" ;
+  ex:capacity 8 ;
+  ex:bedrooms 4 ;
+  ex:distanceToLakeMeters 150 ;
+  ex:nearestCity ex:Tampere ;
+  ex:distanceToCityMeters 18000 ;
+  ex:hasAvailability ex:Avail_C1, ex:Avail_C2 .
+
+ex:Cottage_D a ex:Cottage ;
+  ex:address "5 Seaside Trail, Sipoo" ;
+  ex:imageURL "https://images.unsplash.com/photo-1512914890250-141adcd33520" ;
+  ex:capacity 5 ;
+  ex:bedrooms 3 ;
+  ex:distanceToLakeMeters 200 ;
+  ex:nearestCity ex:Helsinki ;
+  ex:distanceToCityMeters 27000 ;
+  ex:hasAvailability ex:Avail_D1 .
+
+ex:Cottage_E a ex:Cottage ;
+  ex:address "44 Forest Path, Jämsä" ;
+  ex:imageURL "https://images.unsplash.com/photo-1519710164239-da123dc03ef4" ;
+  ex:capacity 3 ;
+  ex:bedrooms 1 ;
+  ex:distanceToLakeMeters 50 ;
+  ex:nearestCity ex:Jyväskylä ;
+  ex:distanceToCityMeters 55000 ;
+  ex:hasAvailability ex:Avail_E1 .
+
+ex:Avail_A1 a ex:AvailabilityPeriod ;
+  ex:startDate "2025-10-26"^^xsd:date ;
+  ex:endDate   "2025-11-10"^^xsd:date .
+
+ex:Avail_A2 a ex:AvailabilityPeriod ;
+  ex:startDate "2025-12-01"^^xsd:date ;
+  ex:endDate   "2025-12-15"^^xsd:date .
+
+ex:Avail_B1 a ex:AvailabilityPeriod ;
+  ex:startDate "2025-10-28"^^xsd:date ;
+  ex:endDate   "2025-11-05"^^xsd:date .
+
+ex:Avail_C1 a ex:AvailabilityPeriod ;
+  ex:startDate "2025-10-20"^^xsd:date ;
+  ex:endDate   "2025-10-30"^^xsd:date .
+
+ex:Avail_C2 a ex:AvailabilityPeriod ;
+  ex:startDate "2025-11-15"^^xsd:date ;
+  ex:endDate   "2025-11-25"^^xsd:date .
+
+ex:Avail_D1 a ex:AvailabilityPeriod ;
+  ex:startDate "2025-10-26"^^xsd:date ;
+  ex:endDate   "2025-10-31"^^xsd:date .
+
+ex:Avail_E1 a ex:AvailabilityPeriod ;
+  ex:startDate "2025-10-24"^^xsd:date ;
+  ex:endDate   "2025-10-29"^^xsd:date .
