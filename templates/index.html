@@ -11,6 +11,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Cottage Booking</title>
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}"/>
+  <style>
+    .links {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #ddd;
+      text-align: center;
+    }
+    .links a {
+      margin: 0 .5rem;
+      color: #1f4e79;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -42,6 +59,13 @@
     </section>
 
     <section id="results" class="results"></section>
+
+    <!-- ✅ Added SSWAP Links -->
+    <div class="links">
+      <p><strong>Semantic Web Interfaces:</strong></p>
+      <a href="/sswap/rdg" target="_blank">🧩 View Service Description (RDG)</a> |
+      <a href="/mediator" target="_blank">⚙️ Open Mediator Client</a>
+    </div>
   </main>
 
   <script>

@@ -1,0 +1,21 @@
+@prefix ex: <http://example.org/cottage#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# --------------------------------------------------------------------
+# Resource Invocation Graph (RIG)
+# --------------------------------------------------------------------
+# This graph represents a service request to the Cottage Booking
+# SSWAP service. It contains one instance of ex:BookingRequest
+# with the user’s booking criteria.
+# --------------------------------------------------------------------
+
+_:request a ex:BookingRequest ;
+    ex:booker_name "John" ;
+    ex:required_places 4 ;
+    ex:required_bedrooms 2 ;
+    ex:max_distance_lake_m 200 ;
+    ex:city "Jyväskylä" ;
+    ex:max_distance_city_m 60000 ;
+    ex:required_days 3 ;
+    ex:start_date "2025-11-01"^^xsd:date ;
+    ex:max_shift_days 2 .

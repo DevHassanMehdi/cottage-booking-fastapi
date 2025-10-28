@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SSWAP Mediator – Cottage Booking Service</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #222;
+    }
+    main.container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-top: 0;
+      color: #1f4e79;
+    }
+    .row { margin-bottom: 1rem; display: flex; flex-direction: column; }
+    label { font-weight: bold; margin-bottom: .3rem; }
+    input { padding: .4rem; font-size: 1rem; }
+    button.btn {
+      background: #1f4e79;
+      color: white;
+      border: none;
+      padding: .6rem 1.2rem;
+      border-radius: .4rem;
+      cursor: pointer;
+    }
+    button.btn:hover { background: #2b6ca3; }
+    pre.mono {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      background: #f3f3f3;
+      padding: 1rem;
+      border-radius: .4rem;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>SSWAP Mediator</h1>
+    <p>This page simulates a Semantic Web client that builds an RDF <strong>RIG</strong> (Resource Invocation Graph) and sends it to the Cottage Booking SSWAP service. The service returns an RDF <strong>RRG</strong> (Resource Response Graph).</p>
+    
+    <form id="mediatorForm">
+      <div class="row">
+        <label>Service URL</label>
+        <input name="svc" value="http://127.0.0.1:8000/sswap/invoke" required />
+      </div>
+
+      <div class="grid">
+        <div class="row"><label>Booker Name</label><input name="booker_name" value="Alice" /></div>
+        <div class="row"><label>Required Places</label><input name="required_places" type="number" value="4" /></div>
+        <div class="row"><label>Bedrooms</label><input name="required_bedrooms" type="number" value="2" /></div>
+        <div class="row"><label>Max Distance to Lake (m)</label><input name="max_distance_lake_m" type="number" value="200" /></div>
+        <div class="row"><label>City</label><input name="city" value="Jyväskylä" /></div>
+        <div class="row"><label>Max Distance to City (m)</label><input name="max_distance_city_m" type="number" value="60000" /></div>
+        <div class="row"><label>Required Days</label><input name="required_days" type="number" value="3" /></div>
+        <div class="row"><label>Start Date</label><input name="start_date" type="date" /></div>
+        <div class="row"><label>Max Shift (± days)</label><input name="max_shift_days" type="number" value="2" /></div>
+      </div>
+
+      <button class="btn" type="submit">Invoke Service</button>
+    </form>
+
+    <h3>RRG (Service Response – Turtle)</h3>
+    <pre id="out" class="mono"></pre>
+  </main>
+
+  <script>
+  document.getElementById('mediatorForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const svc = fd.get('svc');
+    const out = document.getElementById('out');
+    out.textContent = "Invoking service...";
+
+    // Build the RIG (RDF request)
+    const rig = `
+@prefix ex: <http://example.org/cottage#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+_:req a ex:BookingRequest ;
+  ex:booker_name "${fd.get('booker_name')}" ;
+  ex:required_places ${Number(fd.get('required_places'))} ;
+  ex:required_bedrooms ${Number(fd.get('required_bedrooms'))} ;
+  ex:max_distance_lake_m ${Number(fd.get('max_distance_lake_m'))} ;
+  ex:city "${fd.get('city')}" ;
+  ex:max_distance_city_m ${Number(fd.get('max_distance_city_m'))} ;
+  ex:required_days ${Number(fd.get('required_days'))} ;
+  ex:start_date "${fd.get('start_date')}"^^xsd:date ;
+  ex:max_shift_days ${Number(fd.get('max_shift_days'))} .
+`.trim();
+
+    try {
+      const resp = await fetch(svc, {
+        method: "POST",
+        headers: { "Content-Type": "text/turtle" },
+        body: rig
+      });
+      const text = await resp.text();
+      out.textContent = text;
+    } catch (err) {
+      out.textContent = "❌ Error invoking service: " + err;
+    }
+  });
+  </script>
+</body>
+</html>
