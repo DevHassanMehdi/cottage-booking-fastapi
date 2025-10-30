@@ -45,6 +45,7 @@
       overflow-x: auto;
       border: 1px solid #ddd;
     }
+    #status { font-weight: bold; color: #1f4e79; margin-left: 1rem; }
   </style>
 </head>
 <body>
@@ -55,7 +56,7 @@
     <form id="mediatorForm">
       <div class="row">
         <label>Service URL</label>
-        <input name="svc" value="http://127.0.0.1:8000/sswap/invoke" required />
+        <input name="service_url" value="http://127.0.0.1:8000/sswap/invoke" required />
       </div>
 
       <div class="grid">
@@ -71,6 +72,7 @@
       </div>
 
       <button class="btn" type="submit">Invoke Service</button>
+      <span id="status"></span>
     </form>
 
     <h3>RRG (Service Response – Turtle)</h3>
@@ -78,40 +80,49 @@
   </main>
 
   <script>
-  document.getElementById('mediatorForm').addEventListener('submit', async (e) => {
+  document.getElementById("mediatorForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const fd = new FormData(e.target);
-    const svc = fd.get('svc');
-    const out = document.getElementById('out');
-    out.textContent = "Invoking service...";
+    const status = document.getElementById("status");
+    const out = document.getElementById("out");
+    out.textContent = "";
+    status.textContent = "Invoking service...";
 
-    // Build the RIG (RDF request)
+    const payload = Object.fromEntries(new FormData(e.target).entries());
+    const serviceUrl = payload.service_url || "http://127.0.0.1:8000/sswap/invoke";
+
+    // Build canonical SSWAP RIG
     const rig = `
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
 @prefix ex: <http://example.org/cottage#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-_:req a ex:BookingRequest ;
-  ex:booker_name "${fd.get('booker_name')}" ;
-  ex:required_places ${Number(fd.get('required_places'))} ;
-  ex:required_bedrooms ${Number(fd.get('required_bedrooms'))} ;
-  ex:max_distance_lake_m ${Number(fd.get('max_distance_lake_m'))} ;
-  ex:city "${fd.get('city')}" ;
-  ex:max_distance_city_m ${Number(fd.get('max_distance_city_m'))} ;
-  ex:required_days ${Number(fd.get('required_days'))} ;
-  ex:start_date "${fd.get('start_date')}"^^xsd:date ;
-  ex:max_shift_days ${Number(fd.get('max_shift_days'))} .
-`.trim();
+[] a sswap:Graph ;
+   sswap:hasMapping [
+     a sswap:Subject , ex:BookingRequest ;
+     ex:booker_name "${payload.booker_name}" ;
+     ex:required_places ${payload.required_places} ;
+     ex:required_bedrooms ${payload.required_bedrooms} ;
+     ex:max_distance_lake_m ${payload.max_distance_lake_m} ;
+     ex:city "${payload.city}" ;
+     ex:max_distance_city_m ${payload.max_distance_city_m} ;
+     ex:required_days ${payload.required_days} ;
+     ex:start_date "${payload.start_date}"^^xsd:date ;
+     ex:max_shift_days ${payload.max_shift_days}
+   ] .
+`;
 
     try {
-      const resp = await fetch(svc, {
+      const resp = await fetch(serviceUrl, {
         method: "POST",
         headers: { "Content-Type": "text/turtle" },
         body: rig
       });
       const text = await resp.text();
+      status.textContent = "";
       out.textContent = text;
     } catch (err) {
-      out.textContent = "❌ Error invoking service: " + err;
+      status.textContent = "Error invoking service.";
+      out.textContent = String(err);
     }
   });
   </script>

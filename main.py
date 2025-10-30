@@ -12,7 +12,8 @@ import uuid
 
 # --- Namespaces -------------------------------------------------------
 EX = Namespace("http://example.org/cottage#")
-SSWAP = Namespace("http://sswap.info/2008/09/sswap#")
+RESOURCE = Namespace("http://127.0.0.1:8000/sswap/service/cottage-booking/")
+SSWAP = Namespace("http://sswapmeet.sswap.info/sswap/")
 SERVICE_BASE = "http://127.0.0.1:8000"
 SERVICE_URI = URIRef(f"{SERVICE_BASE}/sswap/service/cottage-booking")
 
@@ -148,56 +149,46 @@ def search(input: SearchInput):
 
 @app.get("/sswap/rdg", response_class=PlainTextResponse)
 def sswap_rdg():
-    g_rdg = Graph()
-    g_rdg.bind("sswap", SSWAP)
-    g_rdg.bind("ex", EX)
-    g_rdg.bind("xsd", XSD)
+    g = Graph()
+    g.bind("rdf", RDF)
+    g.bind("owl", Namespace("http://www.w3.org/2002/07/owl#"))
+    g.bind("sswap", Namespace("http://sswapmeet.sswap.info/sswap/"))
+    g.bind("ex", EX)
+    g.bind("resource", Namespace("http://127.0.0.1:8000/sswap/service/cottage-booking/"))
 
-    svc = SERVICE_URI
-    g_rdg.add((svc, RDF.type, SSWAP.Service))
-    g_rdg.add((svc, RDFS.label, Literal("Cottage Booking SSWAP Service")))
-    g_rdg.add((svc, SSWAP.provides, EX.BookingSuggestion))
-    g_rdg.add((svc, SSWAP.requires, EX.BookingRequest))
+    svc = RESOURCE["cottageBookingService"]
+    g.add((svc, RDF.type, SSWAP.Resource))
+    g.add((svc, RDF.type, EX.CottageBookingService))
+    g.add((svc, SSWAP.providedBy, RESOURCE["serviceProvider"]))
+    g.add((svc, SSWAP.name, Literal("Cottage Booking Semantic Web Service")))
+    g.add((svc, SSWAP.oneLineDescription, Literal("A service that accepts booking criteria and returns available cottages.")))
 
-    # input description
-    req = EX.BookingRequest
-    g_rdg.add((req, RDF.type, RDFS.Class))
-    for prop, dtype in [
-        (EX.required_places, XSD.integer),
-        (EX.required_bedrooms, XSD.integer),
-        (EX.max_distance_lake_m, XSD.integer),
-        (EX.city, XSD.string),
-        (EX.max_distance_city_m, XSD.integer),
-        (EX.required_days, XSD.integer),
-        (EX.start_date, XSD.date),
-        (EX.max_shift_days, XSD.integer),
-        (EX.booker_name, XSD.string),
-    ]:
-        g_rdg.add((prop, RDF.type, RDF.Property))
-        g_rdg.add((prop, RDFS.domain, req))
-        g_rdg.add((prop, RDFS.range, dtype))
+    graph = BNode()
+    g.add((svc, SSWAP.operatesOn, graph))
+    g.add((graph, RDF.type, SSWAP.Graph))
 
-    # output description
-    out = EX.BookingSuggestion
-    g_rdg.add((out, RDF.type, RDFS.Class))
-    for prop, dtype in [
-        (EX.booking_number, XSD.string),
-        (EX.address, XSD.string),
-        (EX.imageURL, XSD.anyURI),
-        (EX.capacity, XSD.integer),
-        (EX.bedrooms, XSD.integer),
-        (EX.distanceToLakeMeters, XSD.integer),
-        (EX.distanceToCityMeters, XSD.integer),
-        (EX.nearestCityName, XSD.string),
-        (EX.bookingStart, XSD.date),
-        (EX.bookingEnd, XSD.date),
-        (EX.booker_name, XSD.string),
-    ]:
-        g_rdg.add((prop, RDF.type, RDF.Property))
-        g_rdg.add((prop, RDFS.domain, out))
-        g_rdg.add((prop, RDFS.range, dtype))
+    mapping = BNode()
+    g.add((graph, SSWAP.hasMapping, mapping))
+    g.add((mapping, RDF.type, SSWAP.Subject))
+    g.add((mapping, RDF.type, EX.BookingRequest))
 
-    return g_rdg.serialize(format="turtle")
+    # Input mappings (Subject)
+    for prop in ["booker_name", "required_places", "required_bedrooms", "max_distance_lake_m",
+                 "city", "max_distance_city_m", "required_days", "start_date", "max_shift_days"]:
+        g.add((mapping, EX[prop], Literal("")))
+
+    obj = BNode()
+    g.add((mapping, SSWAP.mapsTo, obj))
+    g.add((obj, RDF.type, SSWAP.Object))
+    g.add((obj, RDF.type, EX.BookingSuggestion))
+
+    # Output mappings (Object)
+    for prop in ["address", "capacity", "bedrooms", "bookingStart", "bookingEnd",
+                 "distanceToLakeMeters", "distanceToCityMeters", "imageURL", "nearestCityName"]:
+        g.add((obj, EX[prop], Literal("")))
+
+    return g.serialize(format="turtle")
+
 
 # --- RIG -> invoke -> RRG ---------------------------------------------
 def _get_str(gx, s, p): v = gx.value(s, p); return str(v) if v else None
@@ -205,58 +196,84 @@ def _get_int(gx, s, p): v = gx.value(s, p); return int(v) if v else None
 def _get_date(gx, s, p): v = gx.value(s, p); return v.toPython() if v else None
 
 @app.post("/sswap/invoke", response_class=PlainTextResponse)
-def sswap_invoke(payload: str = Body(..., media_type="text/turtle"),
-                 content_type: Optional[str] = Header(default="text/turtle")):
-    rig = Graph()
+async def sswap_invoke(request: Request):
+    """Canonical SSWAP-compliant invocation (RIG → RRG)."""
+    body = (await request.body()).decode("utf-8")
+
+    g = Graph()
     try:
-        fmt = "xml" if content_type and "rdf+xml" in content_type else "turtle"
-        rig.parse(data=payload, format=fmt)
+        g.parse(data=body, format="turtle")
     except Exception as e:
         return PlainTextResponse(f"# RIG parse error: {e}", status_code=400)
 
-    req_nodes = list(rig.subjects(RDF.type, EX.BookingRequest))
-    if not req_nodes:
-        return PlainTextResponse("# No ex:BookingRequest found in RIG", status_code=400)
-    s = req_nodes[0]
+    # --- locate Subject node (the BookingRequest) ---
+    subject_node = None
+    graph_node = None
+    for gr in g.subjects(RDF.type, SSWAP.Graph):
+        graph_node = gr
+        for sub in g.objects(gr, SSWAP.hasMapping):
+            if (sub, RDF.type, SSWAP.Subject) in g and (sub, RDF.type, EX.BookingRequest) in g:
+                subject_node = sub
+                break
+        if subject_node:
+            break
+
+    if not subject_node:
+        return PlainTextResponse(
+            "Invalid RIG: Missing sswap:Subject of type ex:BookingRequest.",
+            status_code=400,
+        )
+
+    # --- extract booking criteria ---
+    def get_val(pred, default=None, cast=str):
+        val = g.value(subject_node, EX[pred])
+        if val is None:
+            return default
+        v = str(val)
+        if cast is int:
+            try:
+                return int(v)
+            except:
+                return default
+        return v
 
     data = dict(
-        booker_name=_get_str(rig, s, EX.booker_name) or "Guest",
-        required_places=_get_int(rig, s, EX.required_places) or 1,
-        required_bedrooms=_get_int(rig, s, EX.required_bedrooms) or 0,
-        max_distance_lake_m=_get_int(rig, s, EX.max_distance_lake_m) or 999999,
-        city=_get_str(rig, s, EX.city) or "",
-        max_distance_city_m=_get_int(rig, s, EX.max_distance_city_m) or 999999,
-        required_days=_get_int(rig, s, EX.required_days) or 1,
-        start_date=_get_date(rig, s, EX.start_date) or date.today(),
-        max_shift_days=_get_int(rig, s, EX.max_shift_days) or 0,
+        booker_name=get_val("booker_name", "Guest"),
+        required_places=get_val("required_places", 1, int),
+        required_bedrooms=get_val("required_bedrooms", 0, int),
+        max_distance_lake_m=get_val("max_distance_lake_m", 999999, int),
+        city=get_val("city", ""),
+        max_distance_city_m=get_val("max_distance_city_m", 999999, int),
+        required_days=get_val("required_days", 1, int),
+        start_date=get_val("start_date", date.today().isoformat()),
+        max_shift_days=get_val("max_shift_days", 0, int),
     )
 
-    results = search(SearchInput(**data))  # reuse core search logic
+    # --- perform search (reuse Task 6 logic) ---
+    results = search(SearchInput(**data))
 
-    rrg = Graph()
-    rrg.bind("ex", EX)
-    rrg.bind("xsd", XSD)
-    rrg.bind("sswap", SSWAP)
-    resp = BNode()
-    rrg.add((resp, RDF.type, EX.BookingResponse))
-
+    # --- extend same graph to build canonical RRG ---
     for r in results:
-        sug = BNode()
-        rrg.add((sug, RDF.type, EX.BookingSuggestion))
-        rrg.add((sug, EX.booking_number, Literal(r.booking_number)))
-        rrg.add((sug, EX.address, Literal(r.address)))
-        rrg.add((sug, EX.imageURL, Literal(r.image_url, datatype=XSD.anyURI)))
-        rrg.add((sug, EX.capacity, Literal(r.capacity, datatype=XSD.integer)))
-        rrg.add((sug, EX.bedrooms, Literal(r.bedrooms, datatype=XSD.integer)))
-        rrg.add((sug, EX.distanceToLakeMeters, Literal(r.distance_to_lake_m, datatype=XSD.integer)))
-        rrg.add((sug, EX.distanceToCityMeters, Literal(r.distance_to_city_m, datatype=XSD.integer)))
-        rrg.add((sug, EX.nearestCityName, Literal(r.nearest_city)))
-        rrg.add((sug, EX.bookingStart, Literal(r.booking_start, datatype=XSD.date)))
-        rrg.add((sug, EX.bookingEnd, Literal(r.booking_end, datatype=XSD.date)))
-        rrg.add((sug, EX.booker_name, Literal(r.booker_name)))
-        rrg.add((resp, EX.hasSuggestion, sug))
+        obj = BNode()
+        g.add((graph_node, SSWAP.hasMapping, obj))
+        g.add((obj, RDF.type, SSWAP.Object))
+        g.add((obj, RDF.type, EX.BookingSuggestion))
 
-    return rrg.serialize(format="turtle")
+        g.add((obj, EX.booking_number, Literal(r.booking_number)))
+        g.add((obj, EX.booker_name, Literal(r.booker_name)))
+        g.add((obj, EX.address, Literal(r.address)))
+        g.add((obj, EX.nearestCityName, Literal(r.nearest_city)))
+        g.add((obj, EX.capacity, Literal(r.capacity, datatype=XSD.integer)))
+        g.add((obj, EX.bedrooms, Literal(r.bedrooms, datatype=XSD.integer)))
+        g.add((obj, EX.distanceToLakeMeters, Literal(r.distance_to_lake_m, datatype=XSD.integer)))
+        g.add((obj, EX.distanceToCityMeters, Literal(r.distance_to_city_m, datatype=XSD.integer)))
+        g.add((obj, EX.bookingStart, Literal(r.booking_start, datatype=XSD.date)))
+        g.add((obj, EX.bookingEnd, Literal(r.booking_end, datatype=XSD.date)))
+        g.add((obj, EX.imageURL, Literal(r.image_url, datatype=XSD.anyURI)))
+
+        g.add((subject_node, SSWAP.mapsTo, obj))
+
+    return g.serialize(format="turtle")
 
 # --- Mediator page ----------------------------------------------------
 @app.get("/mediator", response_class=HTMLResponse)
