@@ -149,43 +149,68 @@ def search(input: SearchInput):
 
 @app.get("/sswap/rdg", response_class=PlainTextResponse)
 def sswap_rdg():
+    """
+    Canonical SSWAP Resource Description Graph (RDG)
+    for the Cottage Booking Semantic Web Service.
+    """
     g = Graph()
     g.bind("rdf", RDF)
     g.bind("owl", Namespace("http://www.w3.org/2002/07/owl#"))
-    g.bind("sswap", Namespace("http://sswapmeet.sswap.info/sswap/"))
+    g.bind("sswap", SSWAP)  # canonical http://sswapmeet.sswap.info/sswap/
     g.bind("ex", EX)
-    g.bind("resource", Namespace("http://127.0.0.1:8000/sswap/service/cottage-booking/"))
+    g.bind("resource", RESOURCE)
 
     svc = RESOURCE["cottageBookingService"]
     g.add((svc, RDF.type, SSWAP.Resource))
     g.add((svc, RDF.type, EX.CottageBookingService))
     g.add((svc, SSWAP.providedBy, RESOURCE["serviceProvider"]))
     g.add((svc, SSWAP.name, Literal("Cottage Booking Semantic Web Service")))
-    g.add((svc, SSWAP.oneLineDescription, Literal("A service that accepts booking criteria and returns available cottages.")))
+    g.add((svc, SSWAP.oneLineDescription, Literal(
+        "A service that accepts booking criteria and returns available cottage booking suggestions."
+    )))
 
+    # ----- Graph structure -----
     graph = BNode()
     g.add((svc, SSWAP.operatesOn, graph))
     g.add((graph, RDF.type, SSWAP.Graph))
 
-    mapping = BNode()
-    g.add((graph, SSWAP.hasMapping, mapping))
-    g.add((mapping, RDF.type, SSWAP.Subject))
-    g.add((mapping, RDF.type, EX.BookingRequest))
+    # ----- Subject (input – BookingRequest) -----
+    subj = BNode()
+    g.add((graph, SSWAP.hasMapping, subj))
+    g.add((subj, RDF.type, SSWAP.Subject))
+    g.add((subj, RDF.type, EX.BookingRequest))
 
-    # Input mappings (Subject)
-    for prop in ["booker_name", "required_places", "required_bedrooms", "max_distance_lake_m",
-                 "city", "max_distance_city_m", "required_days", "start_date", "max_shift_days"]:
-        g.add((mapping, EX[prop], Literal("")))
+    # Input properties (9 total)
+    inputs = [
+        "booker_name", "required_places", "required_bedrooms",
+        "max_distance_lake_m", "city", "max_distance_city_m",
+        "required_days", "start_date", "max_shift_days"
+    ]
+    for p in inputs:
+        g.add((subj, EX[p], Literal("")))
 
+    # ----- Object (output – BookingSuggestion) -----
     obj = BNode()
-    g.add((mapping, SSWAP.mapsTo, obj))
+    g.add((subj, SSWAP.mapsTo, obj))
     g.add((obj, RDF.type, SSWAP.Object))
     g.add((obj, RDF.type, EX.BookingSuggestion))
 
-    # Output mappings (Object)
-    for prop in ["address", "capacity", "bedrooms", "bookingStart", "bookingEnd",
-                 "distanceToLakeMeters", "distanceToCityMeters", "imageURL", "nearestCityName"]:
-        g.add((obj, EX[prop], Literal("")))
+    # Output properties (11 total)
+    outputs = [
+        "booker_name",          # 1) same as input booker
+        "booking_number",       # 2)
+        "address",              # 3)
+        "imageURL",             # 4)
+        "capacity",             # 5)
+        "bedrooms",             # 6)
+        "distanceToLakeMeters", # 7)
+        "nearestCityName",      # 8)
+        "distanceToCityMeters", # 9)
+        "bookingStart",         # 10)
+        "bookingEnd"            # 11)
+    ]
+    for p in outputs:
+        g.add((obj, EX[p], Literal("")))
 
     return g.serialize(format="turtle")
 
@@ -197,7 +222,7 @@ def _get_date(gx, s, p): v = gx.value(s, p); return v.toPython() if v else None
 
 @app.post("/sswap/invoke", response_class=PlainTextResponse)
 async def sswap_invoke(request: Request):
-    """Canonical SSWAP-compliant invocation (RIG → RRG)."""
+    """Canonical SSWAP-compliant invocation (RIG → RRG) without blank node IDs."""
     body = (await request.body()).decode("utf-8")
 
     g = Graph()
@@ -233,7 +258,7 @@ async def sswap_invoke(request: Request):
         if cast is int:
             try:
                 return int(v)
-            except:
+            except Exception:
                 return default
         return v
 
@@ -252,28 +277,47 @@ async def sswap_invoke(request: Request):
     # --- perform search (reuse Task 6 logic) ---
     results = search(SearchInput(**data))
 
-    # --- extend same graph to build canonical RRG ---
+    # --- build canonical SSWAP response graph manually (human-readable) ---
+    response = "@prefix ex: <http://example.org/cottage#> .\n"
+    response += "@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .\n"
+    response += "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n"
+
+    response += "[] a sswap:Graph ;\n"
+    response += "   sswap:hasMapping [\n"
+    response += "      a ex:BookingRequest , sswap:Subject ;\n"
+
+    # Input request
+    for key, val in data.items():
+        if isinstance(val, (int, float)):
+            response += f"      ex:{key} {val} ;\n"
+        else:
+            response += f"      ex:{key} \"{val}\" ;\n"
+
+    response += "      sswap:mapsTo \n"
+
+    # Each booking suggestion
+    suggestion_blocks = []
     for r in results:
-        obj = BNode()
-        g.add((graph_node, SSWAP.hasMapping, obj))
-        g.add((obj, RDF.type, SSWAP.Object))
-        g.add((obj, RDF.type, EX.BookingSuggestion))
+        block = (
+            "         [ a ex:BookingSuggestion , sswap:Object ;\n"
+            f"           ex:booker_name \"{r.booker_name}\" ;\n"
+            f"           ex:booking_number \"{r.booking_number}\" ;\n"
+            f"           ex:address \"{r.address}\" ;\n"
+            f"           ex:imageURL \"{r.image_url}\"^^xsd:anyURI ;\n"
+            f"           ex:capacity {r.capacity} ;\n"
+            f"           ex:bedrooms {r.bedrooms} ;\n"
+            f"           ex:distanceToLakeMeters {r.distance_to_lake_m} ;\n"
+            f"           ex:nearestCityName \"{r.nearest_city}\" ;\n"
+            f"           ex:distanceToCityMeters {r.distance_to_city_m} ;\n"
+            f"           ex:bookingStart \"{r.booking_start}\"^^xsd:date ;\n"
+            f"           ex:bookingEnd \"{r.booking_end}\"^^xsd:date ]"
+        )
+        suggestion_blocks.append(block)
 
-        g.add((obj, EX.booking_number, Literal(r.booking_number)))
-        g.add((obj, EX.booker_name, Literal(r.booker_name)))
-        g.add((obj, EX.address, Literal(r.address)))
-        g.add((obj, EX.nearestCityName, Literal(r.nearest_city)))
-        g.add((obj, EX.capacity, Literal(r.capacity, datatype=XSD.integer)))
-        g.add((obj, EX.bedrooms, Literal(r.bedrooms, datatype=XSD.integer)))
-        g.add((obj, EX.distanceToLakeMeters, Literal(r.distance_to_lake_m, datatype=XSD.integer)))
-        g.add((obj, EX.distanceToCityMeters, Literal(r.distance_to_city_m, datatype=XSD.integer)))
-        g.add((obj, EX.bookingStart, Literal(r.booking_start, datatype=XSD.date)))
-        g.add((obj, EX.bookingEnd, Literal(r.booking_end, datatype=XSD.date)))
-        g.add((obj, EX.imageURL, Literal(r.image_url, datatype=XSD.anyURI)))
+    response += " ,\n".join(suggestion_blocks) + " \n   ] .\n"
 
-        g.add((subject_node, SSWAP.mapsTo, obj))
+    return PlainTextResponse(response, media_type="text/turtle")
 
-    return g.serialize(format="turtle")
 
 # --- Mediator page ----------------------------------------------------
 @app.get("/mediator", response_class=HTMLResponse)
