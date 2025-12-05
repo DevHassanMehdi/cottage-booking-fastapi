@@ -1,7 +1,7 @@
 {
   "service_url": "http://127.0.0.1:8000/fake-remote/invoke",
   "rdg_url": "http://127.0.0.1:8000/fake-remote/rdg",
-  "saved_at": "2025-12-05T05:57:38.338863Z",
+  "saved_at": "2025-12-05T06:05:13.420164Z",
   "mappings": [
     {
       "remote_uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
@@ -19,42 +19,6 @@
       "remote_uri": "http://example.org/ties4520/tasks/bookingService.owl#bookerName",
       "remote_name": "bookerName",
       "local": "booker_name",
-      "kind": "input"
-    },
-    {
-      "remote_uri": "http://example.org/ties4520/tasks/bookingService.owl#nearestCity",
-      "remote_name": "nearestCity",
-      "local": "max_distance_city_m",
-      "kind": "input"
-    },
-    {
-      "remote_uri": "http://example.org/ties4520/tasks/bookingService.owl#distanceToCity",
-      "remote_name": "distanceToCity",
-      "local": "max_distance_city_m",
-      "kind": "input"
-    },
-    {
-      "remote_uri": "http://example.org/ties4520/tasks/bookingService.owl#distanceToLake",
-      "remote_name": "distanceToLake",
-      "local": "max_distance_lake_m",
-      "kind": "input"
-    },
-    {
-      "remote_uri": "http://example.org/ties4520/tasks/bookingService.owl#bedrooms",
-      "remote_name": "bedrooms",
-      "local": "required_bedrooms",
-      "kind": "input"
-    },
-    {
-      "remote_uri": "http://example.org/ties4520/tasks/bookingService.owl#capacity",
-      "remote_name": "capacity",
-      "local": "city",
-      "kind": "input"
-    },
-    {
-      "remote_uri": "http://example.org/ties4520/tasks/bookingService.owl#startDate",
-      "remote_name": "startDate",
-      "local": "start_date",
       "kind": "input"
     },
     {

@@ -6,163 +6,89 @@
   <title>SSWAP Mediator – Cottage Booking Service</title>
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      margin: 0;
-      background: #f0f3f7;
-      color: #222;
+    .intro {
+      margin: 12px 0 24px;
+      color: #4a5568;
+      line-height: 1.5;
     }
-    main.container {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 0 1.5rem 2.5rem;
-    }
-    h1 {
-      margin: 1rem 0 .5rem;
-      color: #1f4e79;
-    }
-    p.lede { font-size: 1.05rem; line-height: 1.5; }
-    section.card {
-      background: white;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .card-grid {
-      margin-top: 1.5rem;
+    .mediatorGrid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+      gap: 20px;
+      align-items: start;
     }
-    .panel {
-      background: #f8fbff;
-      border: 1px solid #dfe7f3;
-      border-radius: .75rem;
-      padding: 1.25rem;
-      min-height: 100%;
+    .mediatorPanel {
+      border: 1px solid #e4e7ec;
+      border-radius: 14px;
+      padding: 18px;
+      background: #fdfefe;
       display: flex;
       flex-direction: column;
+      gap: 14px;
     }
-    .panel-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+    .mediatorPanel h3 {
+      margin: 0;
+      color: #0a2540;
     }
-    .panel h3 { margin: 0; color: #1f4e79; }
-    .row { margin-bottom: 1rem; display: flex; flex-direction: column; }
-    label { font-weight: 600; margin-bottom: .3rem; }
-    input, select {
-      padding: .5rem;
-      border-radius: .35rem;
-      border: 1px solid #c4cdd7;
-      font-size: 1rem;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-    .dual-grid {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-    button.btn {
-      background: #1f4e79;
-      color: white;
-      border: none;
-      padding: .55rem 1.4rem;
-      border-radius: .4rem;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    button.btn.secondary {
-      background: #fff;
-      color: #1f4e79;
-      border: 1px solid #1f4e79;
-    }
-    button.btn[disabled] {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-    .form-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .status {
+    .statusLine {
       font-weight: 600;
-      color: #1f4e79;
+      color: #0a2540;
       min-height: 1.2rem;
     }
     table.alignment {
       width: 100%;
       border-collapse: collapse;
-      font-size: .95rem;
+      font-size: .9rem;
     }
-    table.alignment th, table.alignment td {
-      border: 1px solid #e1e6ee;
-      padding: .5rem .65rem;
+    table.alignment th,
+    table.alignment td {
+      border: 1px solid #e7ebf2;
+      padding: 7px 8px;
       text-align: left;
     }
-    table.alignment th { background: #f6f8fb; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
-    table.alignment td code { background: #f0f4fa; padding: .1rem .35rem; border-radius: .3rem; }
-    table.alignment tr.lowConfidence td { background: #fff6e5; }
-    #alignmentTable {
-      flex: 1;
-      min-height: 260px;
+    table.alignment th {
+      text-transform: uppercase;
+      font-size: .75rem;
+      letter-spacing: .05em;
+      background: #f5f7fb;
+    }
+    table.alignment tr.lowConfidence td {
+      background: #fff8e6;
     }
     pre.mono {
       font-family: ui-monospace, Menlo, Consolas, monospace;
-      white-space: pre-wrap;
-      background: #0f172a;
+      background: #0a2540;
       color: #e2e8f0;
-      padding: 1rem;
-      border-radius: .6rem;
-      overflow-x: auto;
-      line-height: 1.45;
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 12px;
+      min-height: 220px;
+      overflow: auto;
     }
-    .results .card {
-      margin-top: 1rem;
-    }
-    .panel .results {
-      flex: 1;
-      overflow-y: auto;
-    }
-    .results article.card {
-      background: #fff;
-      border: 1px solid #dfe7f3;
-      border-radius: .6rem;
-      padding: .75rem 1rem;
+    .twoCol {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
     }
   </style>
 </head>
 <body>
-  <main class="container">
-    <h1>SSWAP Mediator</h1>
-    <p class="lede">Align unknown cottage-booking ontologies on the fly. Step one analyses a remote RDG and stores the alignment. Step two reuses that alignment to invoke the service, transform the RRG, and render normalized booking suggestions.</p>
+  <header class="topbar">
+    <div class="logo">Cottage<span>Book</span></div>
+  </header>
 
-    <section class="card">
-      <div class="card-header">
-        <div>
-          <h2>Step 1 · Describe Remote Service</h2>
-          <p>Provide the RDG endpoint (service description) and the invoke endpoint of the remote SSWAP service. The mediator downloads the RDG, auto-suggests matches, and lets you confirm or override every mapping.</p>
-        </div>
-      </div>
-      <div class="card-grid">
-        <div class="panel">
+  <main class="container">
+    <section class="searchCard">
+      <div class="tabs"><button class="tab active" type="button">Mediator</button></div>
+      <h1 style="margin: 0 0 4px;">SSWAP Mediator</h1>
+      <p class="intro">Align unknown cottage-booking ontologies on the fly. Step one analyses a remote RDG and stores the alignment. Step two reuses that alignment to invoke the service, transform the RRG, and render normalized booking suggestions.</p>
+    </section>
+
+    <section class="searchCard">
+      <div class="tabs"><button class="tab active" type="button">Step 1 · Describe Remote Service</button></div>
+      <p class="intro" style="margin-top:0">Provide the RDG endpoint and invoke URL of the remote SSWAP service. The mediator downloads the RDG, auto-suggests mappings, and lets you confirm or override each term.</p>
+      <div class="mediatorGrid">
+        <div class="mediatorPanel">
           <form id="alignmentForm">
             <div class="row">
               <label>RDG URL</label>
@@ -172,33 +98,29 @@
               <label>Invoke URL</label>
               <input name="service_url" value="http://127.0.0.1:8000/fake-remote/invoke" required />
             </div>
-            <div class="form-actions">
+            <div class="actions">
               <button class="btn" type="button" id="previewAlignment">Fetch Remote RDG</button>
-              <span id="alignmentStatus" class="status"></span>
+              <span id="alignmentStatus" class="statusLine"></span>
             </div>
           </form>
         </div>
-        <div class="panel align-preview">
-          <div class="panel-head">
+        <div class="mediatorPanel">
+          <div class="actions" style="justify-content: space-between; padding: 0;">
             <h3>Alignment Preview</h3>
-            <button class="btn secondary" id="saveAlignment" type="button" disabled>Save Alignment</button>
+            <button class="btn" id="saveAlignment" type="button" disabled>Save Alignment</button>
           </div>
-          <div id="alignmentTable"></div>
+          <div id="alignmentTable" style="flex:1;min-height:220px;"></div>
         </div>
       </div>
     </section>
 
-    <section class="card">
-      <div class="card-header">
-        <div>
-          <h2>Step 2 · Invoke Through Mediator</h2>
-          <p>The mediator builds a RIG using the confirmed alignment, invokes the remote service, and transforms the RRG back into the native schema used by this UI.</p>
-        </div>
-      </div>
-      <div class="card-grid">
-        <div class="panel">
+    <section class="searchCard">
+      <div class="tabs"><button class="tab active" type="button">Step 2 · Invoke Through Mediator</button></div>
+      <p class="intro" style="margin-top:0">The mediator builds a RIG using the confirmed alignment, invokes the remote service, and transforms the RRG back into the native schema.</p>
+      <div class="mediatorGrid">
+        <div class="mediatorPanel">
           <form id="invokeForm">
-            <div class="grid dual-grid">
+            <div class="twoCol">
               <div class="row"><label>Booker Name</label><input name="booker_name" value="Alice" required /></div>
               <div class="row"><label>Required Places</label><input name="required_places" type="number" value="4" min="1" required /></div>
               <div class="row"><label>Bedrooms</label><input name="required_bedrooms" type="number" value="2" min="0" required /></div>
@@ -209,18 +131,20 @@
               <div class="row"><label>Start Date</label><input name="start_date" type="date" required /></div>
               <div class="row"><label>Max Shift (± days)</label><input name="max_shift_days" type="number" value="2" min="0" required /></div>
             </div>
-            <div class="form-actions">
+            <div class="actions">
               <button class="btn" type="submit">Invoke Remote Service</button>
-              <span class="status" id="invokeStatus"></span>
+              <span class="statusLine" id="invokeStatus"></span>
             </div>
           </form>
         </div>
-        <div class="panel">
+        <div class="mediatorPanel">
           <h3>Normalized Suggestions</h3>
           <div id="remoteResults" class="results"></div>
-          <h3 style="margin-top:1.5rem;">Raw RRG (Transformed Response)</h3>
-          <pre id="rrgRaw" class="mono"></pre>
         </div>
+      </div>
+      <div class="mediatorPanel" style="margin-top:20px;">
+        <h3>Raw RRG (Transformed)</h3>
+        <pre id="rrgRaw" class="mono"></pre>
       </div>
     </section>
   </main>
