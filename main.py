@@ -25,6 +25,8 @@ RESOURCE = Namespace("http://127.0.0.1:8000/sswap/service/cottage-booking/")
 SSWAP = Namespace("http://sswapmeet.sswap.info/sswap/")
 SERVICE_BASE = "http://127.0.0.1:8000"
 SERVICE_URI = URIRef(f"{SERVICE_BASE}/sswap/service/cottage-booking")
+FAKE_REMOTE_RDG_URL = f"{SERVICE_BASE}/fake-remote/rdg"
+FAKE_REMOTE_INVOKE_URL = f"{SERVICE_BASE}/fake-remote/invoke"
 
 ALIGNMENTS_DIR = Path("alignments")
 ALIGNMENTS_DIR.mkdir(exist_ok=True)
@@ -168,6 +170,12 @@ def _similarity(a: str, b: str) -> float:
 
 
 def _fetch_remote_text(url: str, body: Optional[str] = None) -> str:
+    # short-circuit bundled fake remote service to avoid self-calls
+    if url == FAKE_REMOTE_RDG_URL:
+        return _read_fake_file(FAKE_REMOTE_RDG)
+    if url == FAKE_REMOTE_INVOKE_URL:
+        return _read_fake_file(FAKE_REMOTE_RRG)
+
     headers = {"Accept": "text/turtle, text/plain;q=0.8, */*;q=0.5"}
     data = None
     method = "GET"
