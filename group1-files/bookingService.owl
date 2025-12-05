@@ -1,0 +1,232 @@
+@prefix : <http://example.org/ties4520/tasks/bookingService.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://example.org/ties4520/tasks/bookingService.owl> .
+
+<http://example.org/ties4520/tasks/bookingService.owl> rdf:type owl:Ontology ;
+                                                        rdfs:comment "Ontology for Cottage Booking Service data" .
+
+#################################################################
+#    Datatypes
+#################################################################
+
+###  http://www.w3.org/2001/XMLSchema#date
+xsd:date rdf:type rdfs:Datatype .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://example.org/ties4520/tasks/bookingService.owl#hasBooking
+:hasBooking rdf:type owl:ObjectProperty ;
+            owl:inverseOf :hasCottage ;
+            rdfs:domain :Cottage ;
+            rdfs:range :Booking ;
+            rdfs:comment "Relates a cottage to its bookings" ;
+            rdfs:label "hasBooking" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#hasCottage
+:hasCottage rdf:type owl:ObjectProperty ;
+            rdfs:domain :Booking ;
+            rdfs:range :Cottage ;
+            rdfs:comment "Relates this bookings to a cottage" ;
+            rdfs:label "hasCottage" .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://example.org/ties4520/tasks/bookingService.owl#address
+:address rdf:type owl:DatatypeProperty ;
+         rdfs:domain [ rdf:type owl:Class ;
+                       owl:unionOf ( :BookingSuggestion
+                                     :Cottage
+                                   )
+                     ] ;
+         rdfs:range xsd:string ;
+         rdfs:comment "Address of the cottage" ;
+         rdfs:label "address" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#bedrooms
+:bedrooms rdf:type owl:DatatypeProperty ;
+          rdfs:domain [ rdf:type owl:Class ;
+                        owl:unionOf ( :BookingSuggestion
+                                      :Cottage
+                                      :SearchRequest
+                                    )
+                      ] ;
+          rdfs:range xsd:integer ;
+          rdfs:comment "Number of bedrooms in the cottage" ;
+          rdfs:label "bedrooms" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#bookerName
+:bookerName rdf:type owl:DatatypeProperty ;
+            rdfs:domain [ rdf:type owl:Class ;
+                          owl:unionOf ( :BookingSuggestion
+                                        :SearchRequest
+                                      )
+                        ] ;
+            rdfs:range xsd:string ;
+            rdfs:comment "Name of person associated with the booking" ;
+            rdfs:label "bookerName" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#capacity
+:capacity rdf:type owl:DatatypeProperty ;
+          rdfs:domain [ rdf:type owl:Class ;
+                        owl:unionOf ( :BookingSuggestion
+                                      :Cottage
+                                      :SearchRequest
+                                    )
+                      ] ;
+          rdfs:range xsd:integer ;
+          rdfs:comment "Maximum number of people the cottage can accommodate" ;
+          rdfs:label "capacity" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#distanceToCity
+:distanceToCity rdf:type owl:DatatypeProperty ;
+                rdfs:domain [ rdf:type owl:Class ;
+                              owl:unionOf ( :BookingSuggestion
+                                            :Cottage
+                                            :SearchRequest
+                                          )
+                            ] ;
+                rdfs:range xsd:integer ;
+                rdfs:comment "Distance from the cottage to the nearest city in kilometers" ;
+                rdfs:label "distanceToCity" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#distanceToLake
+:distanceToLake rdf:type owl:DatatypeProperty ;
+                rdfs:domain [ rdf:type owl:Class ;
+                              owl:unionOf ( :BookingSuggestion
+                                            :Cottage
+                                            :SearchRequest
+                                          )
+                            ] ;
+                rdfs:range xsd:integer ;
+                rdfs:comment "Distance from the cottage to the nearest lake in meters" ;
+                rdfs:label "distanceToLake" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#duration
+:duration rdf:type owl:DatatypeProperty ;
+          rdfs:domain :SearchRequest ;
+          rdfs:range xsd:integer ;
+          rdfs:comment "Number of days from startDate" ;
+          rdfs:label "duration" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#endDate
+:endDate rdf:type owl:DatatypeProperty ;
+         rdfs:domain [ rdf:type owl:Class ;
+                       owl:unionOf ( :BookingSuggestion
+                                     :Cottage
+                                     :SearchRequest
+                                   )
+                     ] ;
+         rdfs:range xsd:date ;
+         rdfs:comment "End date of the booking period" ;
+         rdfs:label "endDate" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#imageURL
+:imageURL rdf:type owl:DatatypeProperty ;
+          rdfs:domain [ rdf:type owl:Class ;
+                        owl:unionOf ( :BookingSuggestion
+                                      :Cottage
+                                      :SearchRequest
+                                    )
+                      ] ;
+          rdfs:range xsd:anyURI ;
+          rdfs:comment "URL of the cottage image" ;
+          rdfs:label "imageURL" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#nearestCity
+:nearestCity rdf:type owl:DatatypeProperty ;
+             rdfs:domain [ rdf:type owl:Class ;
+                           owl:unionOf ( :BookingSuggestion
+                                         :Cottage
+                                         :SearchRequest
+                                       )
+                         ] ;
+             rdfs:range xsd:string ;
+             rdfs:comment "Name of the nearest city to the cottage" ;
+             rdfs:label "nearestCity" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#referenceNumber
+:referenceNumber rdf:type owl:DatatypeProperty ;
+       rdfs:domain :BookingSuggestion ;
+       rdfs:range xsd:string ;
+       rdfs:comment "Unique identifier / reference number for the booking suggestion" ;
+       rdfs:label "referenceNumber" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#shift
+:shift rdf:type owl:DatatypeProperty ;
+       rdfs:domain :SearchRequest ;
+       rdfs:range xsd:integer ;
+       rdfs:comment "+/- number of days of a search request from startDate" ;
+       rdfs:label "shift" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#startDate
+:startDate rdf:type owl:DatatypeProperty ;
+           rdfs:domain [ rdf:type owl:Class ;
+                         owl:unionOf ( :BookingSuggestion
+                                       :Cottage
+                                       :SearchRequest
+                                     )
+                       ] ;
+           rdfs:range xsd:date ;
+           rdfs:comment "Start date of the booking period" ;
+           rdfs:label "startDate" .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://example.org/ties4520/tasks/bookingService.owl#Booking
+:Booking rdf:type owl:Class ;
+         rdfs:comment "A booking period for a cottage" ;
+         rdfs:label "Booking" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#BookingSuggestion
+:BookingSuggestion rdf:type owl:Class ;
+                   rdfs:comment "Cottage booking search response item" ;
+                   rdfs:label "BookingSuggestion" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#Cottage
+:Cottage rdf:type owl:Class ;
+         rdfs:comment "A cottage available for booking" ;
+         rdfs:label "Cottage" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#CottageBookingService
+:CottageBookingService rdf:type owl:Class ;
+               rdfs:comment "Cottage booking service" ;
+               rdfs:label "CottageBookingService" .
+
+
+###  http://example.org/ties4520/tasks/bookingService.owl#SearchRequest
+:SearchRequest rdf:type owl:Class ;
+               rdfs:comment "Cottage booking search" ;
+               rdfs:label "SearchRequest" .
+
+
+
+###  Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi

@@ -1,0 +1,28 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix service: <http://example.org/ties4520/tasks/bookingService.owl#> .
+@prefix cottage: <http://example.org/ties4520/tasks/cottages.ttl#> .
+@prefix : <http://example.org/ties4520/tasks/bookings.ttl#> .
+
+
+<http://example.org/ties4520/tasks/bookings.ttl>
+    a owl:Ontology ;
+    owl:imports <http://example.org/ties4520/tasks/bookingService.owl>, <http://example.org/ties4520/tasks/cottages.ttl> .
+
+:booking_475110fd-036d-4f4a-94a3-222e53d3fb73 a service:Booking ;
+    service:bookerName "Mikko Mukkanen" ;
+    service:startDate "2026-03-12"^^xsd:date ;
+    service:endDate "2026-03-14"^^xsd:date ;
+    service:hasCottage cottage:cottage1 .
+
+:booking_874e215b-f2da-4994-bd26-0e96b6f4d926 a service:Booking ;
+    service:bookerName "Teppo Testaja" ;
+    service:startDate "2026-03-12"^^xsd:date ;
+    service:endDate "2026-03-14"^^xsd:date ;
+    service:hasCottage cottage:cottage4 .
+
+:booking_ddfa8836-3a0a-489d-90cf-f18dba1bb4a9 a service:Booking ;
+    service:bookerName "Teppo Testaja" ;
+    service:startDate "2025-11-30"^^xsd:date ;
+    service:endDate "2025-12-02"^^xsd:date ;
+    service:hasCottage cottage:cottage4.

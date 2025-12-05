@@ -9,122 +9,389 @@
     body {
       font-family: system-ui, sans-serif;
       margin: 0;
-      background: #f8f9fa;
+      background: #f0f3f7;
       color: #222;
     }
     main.container {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 2rem auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 0 1.5rem 2.5rem;
     }
     h1 {
-      margin-top: 0;
+      margin: 1rem 0 .5rem;
       color: #1f4e79;
     }
+    p.lede { font-size: 1.05rem; line-height: 1.5; }
+    section.card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .card-grid {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .panel {
+      background: #f8fbff;
+      border: 1px solid #dfe7f3;
+      border-radius: .75rem;
+      padding: 1.25rem;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .panel h3 { margin: 0; color: #1f4e79; }
     .row { margin-bottom: 1rem; display: flex; flex-direction: column; }
-    label { font-weight: bold; margin-bottom: .3rem; }
-    input { padding: .4rem; font-size: 1rem; }
+    label { font-weight: 600; margin-bottom: .3rem; }
+    input, select {
+      padding: .5rem;
+      border-radius: .35rem;
+      border: 1px solid #c4cdd7;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .dual-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
     button.btn {
       background: #1f4e79;
       color: white;
       border: none;
-      padding: .6rem 1.2rem;
+      padding: .55rem 1.4rem;
       border-radius: .4rem;
       cursor: pointer;
+      font-size: 1rem;
     }
-    button.btn:hover { background: #2b6ca3; }
+    button.btn.secondary {
+      background: #fff;
+      color: #1f4e79;
+      border: 1px solid #1f4e79;
+    }
+    button.btn[disabled] {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .status {
+      font-weight: 600;
+      color: #1f4e79;
+      min-height: 1.2rem;
+    }
+    table.alignment {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .95rem;
+    }
+    table.alignment th, table.alignment td {
+      border: 1px solid #e1e6ee;
+      padding: .5rem .65rem;
+      text-align: left;
+    }
+    table.alignment th { background: #f6f8fb; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+    table.alignment td code { background: #f0f4fa; padding: .1rem .35rem; border-radius: .3rem; }
+    table.alignment tr.lowConfidence td { background: #fff6e5; }
+    #alignmentTable {
+      flex: 1;
+      min-height: 260px;
+    }
     pre.mono {
       font-family: ui-monospace, Menlo, Consolas, monospace;
       white-space: pre-wrap;
-      background: #f3f3f3;
+      background: #0f172a;
+      color: #e2e8f0;
       padding: 1rem;
-      border-radius: .4rem;
+      border-radius: .6rem;
       overflow-x: auto;
-      border: 1px solid #ddd;
+      line-height: 1.45;
     }
-    #status { font-weight: bold; color: #1f4e79; margin-left: 1rem; }
+    .results .card {
+      margin-top: 1rem;
+    }
+    .panel .results {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .results article.card {
+      background: #fff;
+      border: 1px solid #dfe7f3;
+      border-radius: .6rem;
+      padding: .75rem 1rem;
+    }
   </style>
 </head>
 <body>
   <main class="container">
     <h1>SSWAP Mediator</h1>
-    <p>This page simulates a Semantic Web client that builds an RDF <strong>RIG</strong> (Resource Invocation Graph) and sends it to the Cottage Booking SSWAP service. The service returns an RDF <strong>RRG</strong> (Resource Response Graph).</p>
-    
-    <form id="mediatorForm">
-      <div class="row">
-        <label>Service URL</label>
-        <input name="service_url" value="http://127.0.0.1:8000/sswap/invoke" required />
+    <p class="lede">Align unknown cottage-booking ontologies on the fly. Step one analyses a remote RDG and stores the alignment. Step two reuses that alignment to invoke the service, transform the RRG, and render normalized booking suggestions.</p>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Step 1 · Describe Remote Service</h2>
+          <p>Provide the RDG endpoint (service description) and the invoke endpoint of the remote SSWAP service. The mediator downloads the RDG, auto-suggests matches, and lets you confirm or override every mapping.</p>
+        </div>
       </div>
-
-      <div class="grid">
-        <div class="row"><label>Booker Name</label><input name="booker_name" value="Alice" /></div>
-        <div class="row"><label>Required Places</label><input name="required_places" type="number" value="4" /></div>
-        <div class="row"><label>Bedrooms</label><input name="required_bedrooms" type="number" value="2" /></div>
-        <div class="row"><label>Max Distance to Lake (m)</label><input name="max_distance_lake_m" type="number" value="200" /></div>
-        <div class="row"><label>City</label><input name="city" value="Jyväskylä" /></div>
-        <div class="row"><label>Max Distance to City (m)</label><input name="max_distance_city_m" type="number" value="60000" /></div>
-        <div class="row"><label>Required Days</label><input name="required_days" type="number" value="3" /></div>
-        <div class="row"><label>Start Date</label><input name="start_date" type="date" /></div>
-        <div class="row"><label>Max Shift (± days)</label><input name="max_shift_days" type="number" value="2" /></div>
+      <div class="card-grid">
+        <div class="panel">
+          <form id="alignmentForm">
+            <div class="row">
+              <label>RDG URL</label>
+              <input name="rdg_url" value="http://127.0.0.1:8000/fake-remote/rdg" required />
+            </div>
+            <div class="row">
+              <label>Invoke URL</label>
+              <input name="service_url" value="http://127.0.0.1:8000/fake-remote/invoke" required />
+            </div>
+            <div class="form-actions">
+              <button class="btn" type="button" id="previewAlignment">Fetch Remote RDG</button>
+              <span id="alignmentStatus" class="status"></span>
+            </div>
+          </form>
+        </div>
+        <div class="panel align-preview">
+          <div class="panel-head">
+            <h3>Alignment Preview</h3>
+            <button class="btn secondary" id="saveAlignment" type="button" disabled>Save Alignment</button>
+          </div>
+          <div id="alignmentTable"></div>
+        </div>
       </div>
+    </section>
 
-      <button class="btn" type="submit">Invoke Service</button>
-      <span id="status"></span>
-    </form>
-
-    <h3>RRG (Service Response – Turtle)</h3>
-    <pre id="out" class="mono"></pre>
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Step 2 · Invoke Through Mediator</h2>
+          <p>The mediator builds a RIG using the confirmed alignment, invokes the remote service, and transforms the RRG back into the native schema used by this UI.</p>
+        </div>
+      </div>
+      <div class="card-grid">
+        <div class="panel">
+          <form id="invokeForm">
+            <div class="grid dual-grid">
+              <div class="row"><label>Booker Name</label><input name="booker_name" value="Alice" required /></div>
+              <div class="row"><label>Required Places</label><input name="required_places" type="number" value="4" min="1" required /></div>
+              <div class="row"><label>Bedrooms</label><input name="required_bedrooms" type="number" value="2" min="0" required /></div>
+              <div class="row"><label>Max Distance to Lake (m)</label><input name="max_distance_lake_m" type="number" value="200" min="0" required /></div>
+              <div class="row"><label>City</label><input name="city" value="Jyväskylä" required /></div>
+              <div class="row"><label>Max Distance to City (m)</label><input name="max_distance_city_m" type="number" value="60000" min="0" required /></div>
+              <div class="row"><label>Required Days</label><input name="required_days" type="number" value="3" min="1" required /></div>
+              <div class="row"><label>Start Date</label><input name="start_date" type="date" required /></div>
+              <div class="row"><label>Max Shift (± days)</label><input name="max_shift_days" type="number" value="2" min="0" required /></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn" type="submit">Invoke Remote Service</button>
+              <span class="status" id="invokeStatus"></span>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>Normalized Suggestions</h3>
+          <div id="remoteResults" class="results"></div>
+          <h3 style="margin-top:1.5rem;">Raw RRG (Transformed Response)</h3>
+          <pre id="rrgRaw" class="mono"></pre>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
-  document.getElementById("mediatorForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const status = document.getElementById("status");
-    const out = document.getElementById("out");
-    out.textContent = "";
-    status.textContent = "Invoking service...";
+  const LOCAL_INPUTS = {{ local_inputs | tojson }};
+  const LOCAL_OUTPUTS = {{ local_outputs | tojson }};
 
-    const payload = Object.fromEntries(new FormData(e.target).entries());
-    const serviceUrl = payload.service_url || "http://127.0.0.1:8000/sswap/invoke";
+  const alignmentForm = document.getElementById("alignmentForm");
+  const previewBtn = document.getElementById("previewAlignment");
+  const alignmentStatus = document.getElementById("alignmentStatus");
+  const alignmentTable = document.getElementById("alignmentTable");
+  const saveBtn = document.getElementById("saveAlignment");
+  const invokeForm = document.getElementById("invokeForm");
+  const invokeStatus = document.getElementById("invokeStatus");
+  const remoteResults = document.getElementById("remoteResults");
+  const rrgRaw = document.getElementById("rrgRaw");
 
-    // Build canonical SSWAP RIG
-    const rig = `
-@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
-@prefix ex: <http://example.org/cottage#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+  let currentPreview = [];
 
-[] a sswap:Graph ;
-   sswap:hasMapping [
-     a sswap:Subject , ex:BookingRequest ;
-     ex:booker_name "${payload.booker_name}" ;
-     ex:required_places ${payload.required_places} ;
-     ex:required_bedrooms ${payload.required_bedrooms} ;
-     ex:max_distance_lake_m ${payload.max_distance_lake_m} ;
-     ex:city "${payload.city}" ;
-     ex:max_distance_city_m ${payload.max_distance_city_m} ;
-     ex:required_days ${payload.required_days} ;
-     ex:start_date "${payload.start_date}"^^xsd:date ;
-     ex:max_shift_days ${payload.max_shift_days}
-   ] .
-`;
+  async function readJsonResponse(resp) {
+    const text = await resp.text();
+    let parsed = null;
+    if (text) {
+      try {
+        parsed = JSON.parse(text);
+      } catch (err) {
+        parsed = null;
+      }
+    }
+    if (!resp.ok) {
+      const detail = (parsed && parsed.detail) || text || resp.statusText;
+      throw new Error(detail || "Unexpected server response.");
+    }
+    if (parsed === null) {
+      throw new Error("Server returned invalid JSON.");
+    }
+    return parsed;
+  }
 
+  previewBtn.addEventListener("click", async () => {
+    alignmentStatus.textContent = "Downloading RDG + calculating alignment...";
+    alignmentTable.innerHTML = "";
+    saveBtn.disabled = true;
     try {
-      const resp = await fetch(serviceUrl, {
+      const payload = Object.fromEntries(new FormData(alignmentForm).entries());
+      const resp = await fetch("/mediator/alignment/preview", {
         method: "POST",
-        headers: { "Content-Type": "text/turtle" },
-        body: rig
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
-      const text = await resp.text();
-      status.textContent = "";
-      out.textContent = text;
+      const data = await readJsonResponse(resp);
+      currentPreview = data.preview || [];
+      renderAlignmentTable(currentPreview);
+      alignmentStatus.textContent = `Preview ready (${currentPreview.length} terms). Confidence threshold = ${data.threshold}.`;
+      saveBtn.disabled = false;
     } catch (err) {
-      status.textContent = "Error invoking service.";
-      out.textContent = String(err);
+      alignmentStatus.textContent = err.message;
     }
   });
+
+  saveBtn.addEventListener("click", async () => {
+    if (!currentPreview.length) return;
+    alignmentStatus.textContent = "Saving alignment...";
+    try {
+      const rows = alignmentTable.querySelectorAll("tbody tr");
+      const mappings = Array.from(rows).map(row => ({
+        remote_uri: row.dataset.remoteUri,
+        remote_name: row.dataset.remoteName,
+        kind: row.dataset.kind,
+        local: row.querySelector("select").value
+      })).filter(item => item.local);
+      const payload = Object.fromEntries(new FormData(alignmentForm).entries());
+      payload.mappings = mappings;
+
+      const resp = await fetch("/mediator/alignment/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await readJsonResponse(resp);
+      alignmentStatus.textContent = `Alignment saved at ${data.saved_at}.`;
+    } catch (err) {
+      alignmentStatus.textContent = err.message;
+    }
+  });
+
+  invokeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    invokeStatus.textContent = "Invoking remote service...";
+    remoteResults.innerHTML = "";
+    rrgRaw.textContent = "";
+    try {
+      const payload = Object.fromEntries(new FormData(invokeForm).entries());
+      const serviceUrl = alignmentForm.querySelector("input[name='service_url']").value;
+      payload.service_url = serviceUrl;
+
+      const resp = await fetch("/mediator/invoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await readJsonResponse(resp);
+      renderResults(data.suggestions || []);
+      rrgRaw.textContent = data.raw_rrg || "";
+      invokeStatus.textContent = `Received ${data.suggestions.length} suggestion(s).`;
+    } catch (err) {
+      invokeStatus.textContent = err.message;
+    }
+  });
+
+  function renderAlignmentTable(items) {
+    if (!items.length) {
+      alignmentTable.innerHTML = "<p>No properties were found inside the RDG.</p>";
+      return;
+    }
+    const rows = items.map(item => {
+      const options = (item.kind === "input" ? LOCAL_INPUTS : LOCAL_OUTPUTS)
+        .map(opt => {
+          const selected = (item.current_local || item.suggested_local) === opt.key ? "selected" : "";
+          return `<option value="${opt.key}" ${selected}>${opt.label}</option>`;
+        }).join("");
+      return `
+        <tr data-remote-uri="${item.remote_uri}" data-remote-name="${item.remote_name}" data-kind="${item.kind}" class="${item.requires_confirmation ? "lowConfidence" : ""}">
+          <td>${item.kind}</td>
+          <td><code>${item.remote_name}</code></td>
+          <td>${item.confidence}</td>
+          <td><select><option value="">-- Select --</option>${options}</select></td>
+        </tr>
+      `;
+    }).join("");
+    alignmentTable.innerHTML = `
+      <table class="alignment">
+        <thead>
+          <tr><th>Kind</th><th>Remote term</th><th>Similarity</th><th>Local property</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p><small>Orange rows require human confirmation because their similarity score is below the threshold.</small></p>
+    `;
+  }
+
+  function renderResults(items) {
+    if (!items.length) {
+      remoteResults.innerHTML = '<div class="empty">No normalized suggestions available. Adjust filters or regenerate the alignment.</div>';
+      return;
+    }
+    remoteResults.innerHTML = items.map(item => `
+      <article class="card">
+        <div class="content">
+          <h3>${item.address}</h3>
+          <div class="meta">
+            <span>Booking <strong>#${item.booking_number}</strong></span>
+            <span>${item.nearest_city} • ${item.distance_to_city_m} m to city</span>
+          </div>
+          <div class="facts">
+            <span>${item.capacity} guests</span>
+            <span>${item.bedrooms} bedrooms</span>
+            <span>${item.booking_start} → ${item.booking_end}</span>
+          </div>
+          <div class="booker">Booker: <strong>${item.booker_name}</strong></div>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  const dateInput = invokeForm.querySelector("input[name='start_date']");
+  if (dateInput && !dateInput.value) {
+    const today = new Date().toISOString().slice(0, 10);
+    dateInput.value = today;
+  }
   </script>
 </body>
 </html>

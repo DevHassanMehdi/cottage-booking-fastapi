@@ -1,0 +1,75 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix service: <http://example.org/ties4520/tasks/bookingService.owl#> .
+@prefix : <http://example.org/ties4520/tasks/cottages.ttl#> .
+
+
+<http://example.org/ties4520/tasks/cottages.ttl>
+    a owl:Ontology ;
+    owl:imports <http://example.org/ties4520/tasks/bookingService.owl>  .
+
+:cottage1
+    a service:Cottage, owl:NamedIndividual ;
+    service:address "Lakeside Road 15, Mikkeli" ;
+    service:bedrooms 3 ;
+    service:capacity 6 ;
+    service:cottageID "cottage1" ;
+    service:distanceToCity 5 ;
+    service:distanceToLake 50 ;
+    service:imageURL "https://a0.muscache.com/im/pictures/hosting/Hosting-1336844940351656739/original/08e5846f-02eb-4266-8240-1909fda1a6cd.jpeg"^^xsd:anyURI ;
+    service:nearestCity "Mikkeli" .
+
+:cottage2
+    a service:Cottage, owl:NamedIndividual ;
+    service:address "Forest View 23, Savonlinna" ;
+    service:bedrooms 2 ;
+    service:capacity 4 ;
+    service:cottageID "cottage2" ;
+    service:distanceToCity 3 ;
+    service:distanceToLake 200 ;
+    service:imageURL "https://a0.muscache.com/im/pictures/hosting/Hosting-1213610717869778859/original/642a8536-cd0c-4e22-b488-9c3237f596ed.jpeg"^^xsd:anyURI ;
+    service:nearestCity "Savonlinna" .
+
+:cottage3
+    a service:Cottage, owl:NamedIndividual ;
+    service:address "Pine Hill 7, Tampere" ;
+    service:bedrooms 4 ;
+    service:capacity 8 ;
+    service:cottageID "cottage3" ;
+    service:distanceToCity 8 ;
+    service:distanceToLake 100 ;
+    service:imageURL "https://a0.muscache.com/im/pictures/hosting/Hosting-1227493026684312289/original/8c1183a4-8f59-4d42-bbc7-5957003a8498.jpeg"^^xsd:anyURI ;
+    service:nearestCity "Tampere" .
+
+:cottage4
+    a service:Cottage, owl:NamedIndividual ;
+    service:address "Waterfront 42, Kuopio" ;
+    service:bedrooms 2 ;
+    service:capacity 5 ;
+    service:cottageID "cottage4" ;
+    service:distanceToCity 4 ;
+    service:distanceToLake 20 ;
+    service:imageURL "https://a0.muscache.com/im/pictures/7ec2eb53-606a-41ba-8a20-f151fcdfc469.jpg"^^xsd:anyURI ;
+    service:nearestCity "Kuopio" .
+
+:cottage5
+    a service:Cottage, owl:NamedIndividual ;
+    service:address "Waterfront 42, Kuopio" ;
+    service:bedrooms 2 ;
+    service:capacity 5 ;
+    service:cottageID "cottage5" ;
+    service:distanceToCity 10 ;
+    service:distanceToLake 50 ;
+    service:imageURL "https://a0.muscache.com/im/pictures/hosting/Hosting-1511786586116626782/original/ee22a811-5dc3-4d17-bee0-e52ad66b86f6.jpeg"^^xsd:anyURI ;
+    service:nearestCity "Kuopio" .
+
+:cottage6
+    a service:Cottage, owl:NamedIndividual ;
+    service:address "Birch Lane 9, Helsinki" ;
+    service:bedrooms 5 ;
+    service:capacity 10 ;
+    service:cottageID "cottage6" ;
+    service:distanceToCity 2 ;
+    service:distanceToLake 300 ;
+    service:imageURL "https://a0.muscache.com/im/pictures/f1a5f165-822f-4b32-a97d-aee3e043ff6a.jpg"^^xsd:anyURI ;
+    service:nearestCity "Helsinki" .

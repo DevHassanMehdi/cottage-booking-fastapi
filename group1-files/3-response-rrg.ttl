@@ -1,0 +1,101 @@
+@prefix service: <http://example.org/ties4520/tasks/bookingService.owl#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix resource: <http://localhost:8000/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+resource:cottage-booking-service
+    a sswap:Resource, service:CottageBookingService ;
+    sswap:name "Cottage Booking Service" ;
+    sswap:oneLineDescription "Search and book available cottages based on criteria" ;
+    sswap:providedBy resource:cottage-booking-service ;
+    sswap:operatesOn [
+        a sswap:Graph ;
+        sswap:hasMapping [
+            a sswap:Subject, service:SearchRequest ;
+            service:bookerName "Teppo Testaja" ;
+            service:nearestCity "Kuopio" ;
+            service:distanceToCity 50 ;
+            service:distanceToLake 50 ;
+            service:bedrooms 2 ;
+            service:capacity 2 ;
+            service:startDate "2023-03-08"^^xsd:date ;
+            service:duration 2 ;
+            service:shift 2 ;
+            sswap:mapsTo [
+                a sswap:Object, service:BookingSuggestion ;
+                service:referenceNumber "db7a3a0d5d23-4d59-92ef-eb9f9414f628" ;
+                service:bookerName "Teppo Testaja" ;
+                service:nearestCity "Kuopio" ;
+                service:address "Waterfront 42, Kuopio" ;
+                service:imageURL "https://a0.muscache.com/im/pictures/7ec2eb53-606a-41ba-8a20-f151fcdfc469.jpg" ;
+                service:distanceToCity 4 ;
+                service:distanceToLake 20 ;
+                service:bedrooms 2 ;
+                service:capacity 5 ;
+                service:startDate "2026-03-06"^^xsd:date ;
+                service:endDate "2026-03-08"^^xsd:date
+            ] ;
+            sswap:mapsTo [
+                a sswap:Object, service:BookingSuggestion ;
+                service:referenceNumber "7262599d-7fe7-4f43-bd31-a2b77d30f9e8" ;
+                service:bookerName "Teppo Testaja" ;
+                service:nearestCity "Kuopio" ;
+                service:address "Waterfront 42, Kuopio" ;
+                service:imageURL "https://a0.muscache.com/im/pictures/7ec2eb53-606a-41ba-8a20-f151fcdfc469.jpg" ;
+                service:distanceToCity 4 ;
+                service:distanceToLake 20 ;
+                service:bedrooms 2 ;
+                service:capacity 5 ;
+                service:startDate "2026-03-07"^^xsd:date ;
+                service:endDate "2026-03-09"^^xsd:date
+            ] ;
+            sswap:mapsTo [
+                a sswap:Object, service:BookingSuggestion ;
+                service:referenceNumber "44fb4748-00af-4450-973c-a5137b3eaa9e" ;
+                service:bookerName "Teppo Testaja" ;
+                service:nearestCity "Kuopio" ;
+                service:address "Waterfront 42, Kuopio" ;
+                service:imageURL "https://a0.muscache.com/im/pictures/7ec2eb53-606a-41ba-8a20-f151fcdfc469.jpg" ;
+                service:distanceToCity 4 ;
+                service:distanceToLake 20 ;
+                service:bedrooms 2 ;
+                service:capacity 5 ;
+                service:startDate "2026-03-08"^^xsd:date ;
+                service:endDate "2026-03-10"^^xsd:date
+            ] ;
+            sswap:mapsTo [
+                a sswap:Object, service:BookingSuggestion ;
+                service:referenceNumber "a3a8fb98-2d46-420f-a81a-e5a2d17567c8" ;
+                service:bookerName "Teppo Testaja" ;
+                service:nearestCity "Kuopio" ;
+                service:address "Waterfront 42, Kuopio" ;
+                service:imageURL "https://a0.muscache.com/im/pictures/7ec2eb53-606a-41ba-8a20-f151fcdfc469.jpg" ;
+                service:distanceToCity 4 ;
+                service:distanceToLake 20 ;
+                service:bedrooms 2 ;
+                service:capacity 5 ;
+                service:startDate "2026-03-09"^^xsd:date ;
+                service:endDate "2026-03-11"^^xsd:date
+            ] ;
+            sswap:mapsTo [
+                a sswap:Object, service:BookingSuggestion ;
+                service:referenceNumber "87323a1d-e31f-4316-90ee-f3c30c592035" ;
+                service:bookerName "Teppo Testaja" ;
+                service:nearestCity "Kuopio" ;
+                service:address "Waterfront 42, Kuopio" ;
+                service:imageURL "https://a0.muscache.com/im/pictures/7ec2eb53-606a-41ba-8a20-f151fcdfc469.jpg" ;
+                service:distanceToCity 4 ;
+                service:distanceToLake 20 ;
+                service:bedrooms 2 ;
+                service:capacity 5 ;
+                service:startDate "2026-03-10"^^xsd:date ;
+                service:endDate "2026-03-12"^^xsd:date
+            ]
+        ]
+    ] .
+
+
+
+
+
+

@@ -1,0 +1,39 @@
+@prefix service: <http://example.org/ties4520/tasks/bookingService.owl#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix resource: <http://localhost:8000/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+resource:cottage-booking-service
+    a sswap:Resource, service:CottageBookingService ;
+    sswap:name "Cottage Booking Service" ;
+    sswap:oneLineDescription "Search and book available cottages based on criteria" ;
+    sswap:providedBy resource:cottage-booking-service ;
+    sswap:operatesOn [
+        a sswap:Graph ;
+        sswap:hasMapping [
+            a sswap:Subject, service:SearchRequest ;
+            service:bookerName "" ;
+            service:nearestCity "" ;
+            service:distanceToCity 0 ;
+            service:distanceToLake 0 ;
+            service:bedrooms 0 ;
+            service:capacity 0 ;
+            service:startDate "2025-01-01"^^xsd:date ;
+            service:duration 1 ;
+            service:shift 0 ;
+            sswap:mapsTo [
+                a sswap:Object, service:BookingSuggestion ;
+                service:referenceNumber "" ;
+                service:bookerName "" ;
+                service:nearestCity "" ;
+                service:address 1 ;
+                service:imageURL "";
+                service:distanceToCity 0 ;
+                service:distanceToLake 0 ;
+                service:bedrooms 0 ;
+                service:capacity 0 ;
+                service:startDate "2025-01-01"^^xsd:date ;
+                service:endDate "2025-01-02"^^xsd:date
+            ]
+        ]
+    ] .
